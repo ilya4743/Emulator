@@ -50,49 +50,51 @@ public:
 class Emulator
 {
 private:
-    vector<Barrier> barriers;
+    vector<Barrier*> barriers;
 public:
-    Emulator(vector<Barrier>&barriers)
+    Emulator(vector<Barrier*>&barriers)
     {
         this->barriers=barriers;
     }
 
-    void foo(vector<Barrier>& out, float width, float height, Point position, float widthNav, float heightNav)
+    vector<int> foo(Point position, float widthNav, float heightNav)
     {
-        float widthMap=width/2;
-        float heightMap=-height/2;
+        vector<int> out;
         widthNav=widthNav/2;
         for(int i=0; i<barriers.size();i++)
         {
-            Point leftTop(barriers[i].x-barriers[i].width/2.0, barriers[i].y+barriers[i].height/2.0);
-            Point rightBottom(barriers[i].x+barriers[i].width/2.0,barriers[i].y-barriers[i].height/2.0);
+            Point leftTop(barriers[i]->x-barriers[i]->width/2.0, barriers[i]->y+barriers[i]->height/2.0);
+            Point rightBottom(barriers[i]->x+barriers[i]->width/2.0,barriers[i]->y-barriers[i]->height/2.0);
             if(!(position.x-widthNav > rightBottom.x || position.x+widthNav < leftTop.x ||
                  position.y > rightBottom.y || position.y-heightNav > leftTop.y))
-                out.push_back(barriers[i]);
-            //Проверка на принадлежность глобальной карте
-            //if(!(-widthMap > rightBottom.x || widthMap < leftTop.x || -heightMap < rightBottom.y || heightMap > leftTop.y))
-            //    out.push_back(barriers[i]);
+                out.push_back(i);
         }
+        return out;
+    }
+    ~Emulator()
+    {
+        for(auto it= barriers.begin(); it!=barriers.end(); ++it)
+            delete(*it);
     }
 };
 
 int main()
 {
-    vector<Barrier> vecBar, vecBarOut;
-    vecBar.push_back(Barrier(0,0,0,0));
-    vecBar.push_back(Barrier(10,0,0,0));
-    vecBar.push_back(Barrier(-10,0,0,0));
-    vecBar.push_back(Barrier(0,10,0,0));
-    vecBar.push_back(Barrier(0,-10,0,0));
+    vector<Barrier*> vecBar;
+    vecBar.push_back(new Barrier(0,0,0,0));
+    vecBar.push_back(new Barrier(10,0,0,0));
+    vecBar.push_back(new Barrier(-10,0,0,0));
+    vecBar.push_back(new Barrier(0,10,0,0));
+    vecBar.push_back(new Barrier(0,-10,0,0));
 
-    vecBar.push_back(Barrier(10,10,0,0));
-    vecBar.push_back(Barrier(-10,-10,0,0));
-    vecBar.push_back(Barrier(-10,10,0,0));
-    vecBar.push_back(Barrier(10,-10,0,0));
+    vecBar.push_back(new Barrier(10,10,0,0));
+    vecBar.push_back(new Barrier(-10,-10,0,0));
+    vecBar.push_back(new Barrier(-10,10,0,0));
+    vecBar.push_back(new Barrier(10,-10,0,0));
     Emulator emu(vecBar);
 
-    emu.foo(vecBarOut,1000,1000,Point(0,0),2,100);
-    for(int i=0; i<vecBarOut.size();i++)
-        cout<<vecBarOut[i].x<<'\t'<<vecBarOut[i].y<< endl;
+    auto vec=emu.foo(Point(0,0),2,100);
+    for(int i=0; i<vec.size();i++)
+        cout<<vec[i];
     return 0;
 }
