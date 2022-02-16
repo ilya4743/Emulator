@@ -62,20 +62,16 @@ public:
         float widthMap=width/2;
         float heightMap=-height/2;
         widthNav=widthNav/2;
-        //position.x-=widthNav;
-        //position.y=
         for(int i=0; i<barriers.size();i++)
         {
             Point leftTop(barriers[i].x-barriers[i].width/2.0, barriers[i].y+barriers[i].height/2.0);
             Point rightBottom(barriers[i].x+barriers[i].width/2.0,barriers[i].y-barriers[i].height/2.0);
             if(!(position.x-widthNav > rightBottom.x || position.x+widthNav < leftTop.x ||
-                 position.y < rightBottom.y || position.y-heightNav > leftTop.y))
+                 position.y > rightBottom.y || position.y-heightNav > leftTop.y))
                 out.push_back(barriers[i]);
+            //Проверка на принадлежность глобальной карте
             //if(!(-widthMap > rightBottom.x || widthMap < leftTop.x || -heightMap < rightBottom.y || heightMap > leftTop.y))
             //    out.push_back(barriers[i]);
-            //if(g.distance->matrix[0].x > this->right_bottom.x || g.distance->matrix[g.distance->matrix.size()-1].x < this->left_top.x ||
-            //   g.distance->matrix[0].y < this->right_bottom.y || g.distance->matrix[g.distance->matrix.size()-1].y > this->left_top.y)
-            //{
         }
     }
 };
@@ -95,7 +91,7 @@ int main()
     vecBar.push_back(Barrier(10,-10,0,0));
     Emulator emu(vecBar);
 
-    emu.foo(vecBarOut,1000,1000,Point(0,0),2,11);
+    emu.foo(vecBarOut,1000,1000,Point(0,0),2,100);
     for(int i=0; i<vecBarOut.size();i++)
         cout<<vecBarOut[i].x<<'\t'<<vecBarOut[i].y<< endl;
     return 0;
